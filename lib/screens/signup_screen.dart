@@ -193,7 +193,7 @@ Future<void> _signup() async {
                                     label: Text(
                                       "Enter your Name",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w400,
+                                        // fontWeight: FontWeight.w400,
                                         color: Colors.grey,
                                       ),
                                     )
@@ -206,7 +206,7 @@ Future<void> _signup() async {
                                     label: Text(
                                       " Enter your Email ",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w400,
+                                        // fontWeight: FontWeight.w400,
                                         color: Colors.grey,
                                       ),
                                     ),
@@ -231,7 +231,7 @@ Future<void> _signup() async {
                                     label: Text(
                                       "Password",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w400,
+                                        // fontWeight: FontWeight.w400,
                                         color: Colors.grey,
                                       ),
                                     ),
@@ -244,7 +244,7 @@ Future<void> _signup() async {
                                     label: Text(
                                       "Confirm Password",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w400,
+                                        // fontWeight: FontWeight.w400,
                                         color: Colors.grey,
                                       ),
                                     )

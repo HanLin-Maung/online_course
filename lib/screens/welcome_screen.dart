@@ -144,6 +144,13 @@ class WelcomeScreen extends StatelessWidget {
           )
         ]),
 
+      ),
+    );
+  }
+}
+
+
+
         // child: Column(children: [
         //   const Padding(
         //     padding: EdgeInsets.only(top: 100.0),
@@ -222,7 +229,3 @@ class WelcomeScreen extends StatelessWidget {
         //   ),
         // ),
         // ]),
-      ),
-    );
-  }
-}
