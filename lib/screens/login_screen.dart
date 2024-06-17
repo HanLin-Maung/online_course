@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print('Failed to login. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
-    setState(() {});
+    // setState(() {});
   }
 
   @override

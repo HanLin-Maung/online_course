@@ -1,38 +1,36 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:circle_button/circle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:online_course_app/Api/api.dart';
+
 import 'package:online_course_app/constants/color.dart';
 import 'package:online_course_app/constants/size.dart';
+import 'package:online_course_app/screens/course_detail_screen.dart';
+import 'package:online_course_app/screens/course_screen.dart';
 import 'package:online_course_app/screens/detail_screen.dart';
 import 'package:online_course_app/screens/edit_category_screen.dart';
-import 'package:online_course_app/widgets/add_category.dart';
-import 'package:online_course_app/widgets/bottom_navigation_bar.dart';
 import 'package:online_course_app/widgets/main_drawer.dart';
 
 List categoryList = [];
 
 class FeaturedScreen extends StatefulWidget {
   const FeaturedScreen({super.key});
-
   @override
   State<FeaturedScreen> createState() => _FeaturedScreenState();
 }
 
 class _FeaturedScreenState extends State<FeaturedScreen> {
-
   @override
   void initState() {
     super.initState();
-    fetchCategories();
+    getAllCategories();
   }
 
-  Future<void> fetchCategories() async {
+  getAllCategories() async {
     try {
-      var response = await API().getCategoryList();
+      var response = await API().getAllCategoriesApi();
 
       if (response.statusCode == 201) {
         var res = json.decode(response.body);
@@ -63,17 +61,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
               ],
             ),
           ),
-          drawer: const MainDrawer(),
-          // floatingActionButton: FloatingActionButton.extended(
-          //   onPressed: () {
-          //     Navigator.push(context,
-          //         MaterialPageRoute(builder: (context) => const AddCategory()));
-          //   },
-          //   icon: const Icon(Icons.add),
-          //   label: const Text('Add Category'),
-          //   backgroundColor: const Color.fromARGB(255, 27, 34, 75),
-          //   foregroundColor: Colors.white,
-          // ),
+          // drawer: const MainDrawer(),
         ),
       ),
     );
@@ -92,40 +80,6 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   bool showAllCategories = false;
 
-  void editCategory(
-      BuildContext scaffoldContext, Map<String, dynamic> category) async {
-    try {
-      // Navigate to the EditCategoryScreen passing the category data
-      final editedCategory = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EditCategoryScreen(category: category),
-        ),
-      );
-
-      // Check if category was edited
-      if (editedCategory != null) {
-        // Update the categoryList with the edited category
-        setState(() {
-          final index = categoryList
-              .indexWhere((element) => element['_id'] == category['_id']);
-          if (index != -1) {
-            categoryList[index] = editedCategory;
-          }
-        });
-
-        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-          SnackBar(content: Text('Category updated successfully')),
-        );
-      }
-    } catch (err) {
-      print('Error editing category: $err');
-      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-        SnackBar(content: Text('Failed to edit category')),
-      );
-    }
-  }
-
   // Toggle between showing all categories and showing only a subset
   void toggleShowAllCategories() {
     setState(() {
@@ -135,7 +89,7 @@ class _BodyState extends State<Body> {
 
   // Truncate the description if it exceeds the maximum number of words
   String _truncateDescription(String description) {
-    const int maxWords = 10;
+    const int maxWords = 8;
     final words = description.split(' ');
     if (words.length <= maxWords) {
       return description;
@@ -192,7 +146,7 @@ class _BodyState extends State<Body> {
                 vertical: 10,
               ),
               crossAxisCount: isWideScreen ? 4 : 2,
-              childAspectRatio: 0.75,
+              childAspectRatio: 0.65,
               crossAxisSpacing: 15,
               mainAxisSpacing: 15,
               children: categoryItems,
@@ -229,17 +183,15 @@ class _BodyState extends State<Body> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DetailScreen(),));
-        
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CourseScreen(cover: category['cover'] ?? '',title: category['title'] ?? '',
+              categoryId: category['_id'] ?? '',
+            ),
+          ),
+        );
       },
-      // onTap: () => Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => DetailsScreen(
-      //       categoryid: category["_id"],
-      //     ),
-      //   ),
-      // ),   <<<<<<<<< To Reopen >>>>>>>>
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -256,139 +208,6 @@ class _BodyState extends State<Body> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Row(
-            //   // mainAxisAlignment: MainAxisAlignment.end,
-            //   children: [
-            //     IconButton(
-            //       onPressed: () {
-            //         showDialog(
-            //           context: context,
-            //           builder: (BuildContext context) {
-            //             return AlertDialog(
-            //               title: const Text("Category Options"),
-            //               content: Column(
-            //                 mainAxisSize: MainAxisSize.min,
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   TextButton(
-            //                     onPressed: () {
-            //                       Navigator.pop(
-            //                           context); // Close the AlertDialog
-            //                       editCategory(context,
-            //                           category); // Call editCategory function
-            //                     },
-            //                     child: const Text('Edit'),
-            //                   ),
-            //                   TextButton(
-            //                     onPressed: () {
-            //                       showDialog(
-            //                           context: context,
-            //                           builder: (BuildContext context) {
-            //                             return AlertDialog(
-            //                               title: const Text("Delete Category"),
-            //                               content: const Text(
-            //                                   "Are you sure want to delete?"),
-            //                               actions: <Widget>[
-            //                                 Container(
-            //                                   decoration: BoxDecoration(
-            //                                     boxShadow: [
-            //                                       BoxShadow(
-            //                                         color: Colors.grey
-            //                                             .withOpacity(
-            //                                                 0.5), // Shadow color
-            //                                         spreadRadius:
-            //                                             2, // Spread radius
-            //                                         blurRadius:
-            //                                             4, // Blur radius
-            //                                         offset: const Offset(
-            //                                             0, 2), // Shadow offset
-            //                                       ),
-            //                                     ],
-            //                                     borderRadius:
-            //                                         BorderRadius.circular(
-            //                                             20), // Border radius
-            //                                   ),
-            //                                   child: ElevatedButton(
-            //                                     style: ElevatedButton.styleFrom(
-            //                                       backgroundColor: Colors
-            //                                           .white, // Button background color
-            //                                       elevation:
-            //                                           0, // No button elevation
-            //                                     ),
-            //                                     onPressed: () {
-            //                                       Navigator.of(context)
-            //                                           .pop(); // Close the dialog
-            //                                     },
-            //                                     child: const Text(
-            //                                       "No",
-            //                                       style: TextStyle(
-            //                                           color: Colors
-            //                                               .black), // Text color
-            //                                     ),
-            //                                   ),
-            //                                 ),
-            //                                 const SizedBox(
-            //                                     width:
-            //                                         10), // Add spacing between buttons
-            //                                 Container(
-            //                                   decoration: BoxDecoration(
-            //                                     boxShadow: [
-            //                                       BoxShadow(
-            //                                         color: Colors.grey
-            //                                             .withOpacity(
-            //                                                 0.5), // Shadow color
-            //                                         spreadRadius:
-            //                                             2, // Spread radius
-            //                                         blurRadius:
-            //                                             4, // Blur radius
-            //                                         offset: const Offset(
-            //                                             0, 2), // Shadow offset
-            //                                       ),
-            //                                     ],
-            //                                     borderRadius:
-            //                                         BorderRadius.circular(
-            //                                             20), // Border radius
-            //                                   ),
-            //                                   child: ElevatedButton(
-            //                                     style: ElevatedButton.styleFrom(
-            //                                       backgroundColor: const Color.fromRGBO(
-            //                                           28,
-            //                                           21,
-            //                                           18,
-            //                                           0.298), // Button background color
-            //                                       elevation:
-            //                                           0, // No button elevation
-            //                                     ),
-            //                                     onPressed: () {
-            //                                       Navigator.of(context)
-            //                                           .pop(); // Close the dialog
-            //                                       deleteCategory(
-            //                                           context); // Call deleteCategory function with scaffold's context
-            //                                     },
-            //                                     child: const Text(
-            //                                       "Yes",
-            //                                       style: TextStyle(
-            //                                           color: Colors
-            //                                               .white), // Text color
-            //                                     ),
-            //                                   ),
-            //                                 ),
-            //                               ],
-            //                             );
-            //                           });
-            //                     },
-            //                     child: const Text('Delete'),
-            //                   ),
-            //                 ],
-            //               ),
-            //             );
-            //           },
-            //         );
-            //       },
-            //       icon: const Icon(Icons.more_vert),
-            //     ),
-            //   ],
-            // ),
             // Check if cover is not null before accessing it
             if (category["cover"] != null)
               CachedNetworkImage(
@@ -410,9 +229,7 @@ class _BodyState extends State<Body> {
               style: Theme.of(context).textTheme.bodySmall,
             )
           ],
-          
         ),
-        
       ),
     );
   }
@@ -469,7 +286,7 @@ class _AppBarState extends State<AppBar> {
                 'Hello,\nWelcome Back',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              // CircleButton(icon: Icons.notifications, onPressed: () {}),
+              //CircleButton(icon: Icons.notifications, onPressed: () {}),
             ],
           ),
         ],
