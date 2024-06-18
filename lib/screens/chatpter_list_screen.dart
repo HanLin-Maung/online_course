@@ -14,7 +14,12 @@ class ChapterListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(outline['title'],
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextStyle(
+              fontSize: 20,
+              // color: Colors.white,
+              fontWeight: FontWeight.bold,
+              ),),
+              
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -47,6 +52,7 @@ class ChapterListScreen extends StatelessWidget {
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
+                  
                 ),
                 child: ListTile(
                   contentPadding: EdgeInsets.all(16),

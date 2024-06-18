@@ -89,7 +89,7 @@ class _BodyState extends State<Body> {
 
   // Truncate the description if it exceeds the maximum number of words
   String _truncateDescription(String description) {
-    const int maxWords = 8;
+    const int maxWords = 11;
     final words = description.split(' ');
     if (words.length <= maxWords) {
       return description;
@@ -109,7 +109,7 @@ class _BodyState extends State<Body> {
         ? widget.categories.map<Widget>((category) {
             return _buildCategoryItem(category);
           }).toList()
-        : widget.categories.take(4).map<Widget>((category) {
+        : widget.categories.take(6).map<Widget>((category) {
             return _buildCategoryItem(category);
           }).toList();
     return SingleChildScrollView(
@@ -146,7 +146,7 @@ class _BodyState extends State<Body> {
                 vertical: 10,
               ),
               crossAxisCount: isWideScreen ? 4 : 2,
-              childAspectRatio: 0.65,
+              childAspectRatio: 0.85,
               crossAxisSpacing: 15,
               mainAxisSpacing: 15,
               children: categoryItems,
@@ -186,8 +186,8 @@ class _BodyState extends State<Body> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CourseScreen(cover: category['cover'] ?? '',title: category['title'] ?? '',
-              categoryId: category['_id'] ?? '',
+            builder: (context) => CourseScreen(
+              selectedCategory: jsonEncode(category) ?? '',
             ),
           ),
         );

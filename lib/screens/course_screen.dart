@@ -1,49 +1,61 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-
-import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:online_course_app/Api/api.dart';
-import 'package:online_course_app/constants/color.dart';
-import 'package:online_course_app/constants/size.dart';
 import 'package:online_course_app/screens/course_detail_screen.dart';
-import 'package:online_course_app/screens/detail_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CourseScreen extends StatefulWidget {
-  final String title;
-  final String cover;
-  final String categoryId;
-  const CourseScreen({Key? key, required this.title, required this.cover, required this.categoryId})
-      : super(key: key);
+  final String selectedCategory;
+
+  const CourseScreen({
+    Key? key,
+    required this.selectedCategory,
+  }) : super(key: key);
+
   @override
   State<CourseScreen> createState() => _CourseScreenState();
 }
 
 class _CourseScreenState extends State<CourseScreen> {
-  late List<dynamic> allCourses;
+  late List<dynamic> allCourses = [];
   List<dynamic> displayedCourses = [];
   bool showAllCourses = false;
   bool isLoading = true;
-  // final String categoryId ;
+  Map<String, dynamic> selectedCategory = {};
+
   @override
   void initState() {
     super.initState();
-    _fetchCourseList();
+    getInitData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // Dispose any resources if needed
+  }
+
+  getInitData() {
+    setState(() {
+      if (widget.selectedCategory != '') {
+        selectedCategory = jsonDecode(widget.selectedCategory);
+        _fetchCourseList();
+      }
+    });
   }
 
   Future<void> _fetchCourseList() async {
     try {
-      var response = await API().getOneCourse(widget.categoryId);
+      var response = await API().getOneCourse(selectedCategory['_id']);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> jsonResponse = json.decode(response.body);
         List<dynamic> courseList = jsonResponse['courses'];
         setState(() {
           allCourses = courseList;
           displayedCourses =
-              courseList.take(5).toList(); // Show first 3 courses initially
+              courseList.take(5).toList(); // Show first 5 courses initially
+          isLoading = false;
         });
       } else {
         print(
@@ -57,7 +69,7 @@ class _CourseScreenState extends State<CourseScreen> {
   void toggleCoursesVisibility() {
     setState(() {
       if (showAllCourses) {
-        displayedCourses = allCourses.take(5).toList(); // Show first 3 courses
+        displayedCourses = allCourses.take(5).toList(); // Show first 5 courses
       } else {
         displayedCourses = allCourses; // Show all courses
       }
@@ -74,7 +86,7 @@ class _CourseScreenState extends State<CourseScreen> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          widget.title,
+          selectedCategory["title"],
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
@@ -86,119 +98,191 @@ class _CourseScreenState extends State<CourseScreen> {
           maxLines: null,
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(5),
-        child: ListView(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 200,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.grey,
-                  image: DecorationImage(
-                    image: NetworkImage(widget.cover),
-                    fit: BoxFit.cover,
-                  )),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.fromLTRB(24, 16, 24, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
+              padding: EdgeInsets.all(5),
+              child: ListView(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.grey,
+                      image: DecorationImage(
+                        image: NetworkImage(selectedCategory['cover']),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Column(
                     children: [
-                      const Text(
-                        "Courses",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(24, 16, 24, 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Courses",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: toggleCoursesVisibility,
+                              child:
+                                  Text(showAllCourses ? "See less" : "See all"),
+                            ),
+                          ],
                         ),
                       ),
-                      TextButton(
-                        onPressed: toggleCoursesVisibility,
-                        child: Text(showAllCourses ? "See less" : "See all"),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        itemCount: displayedCourses.length,
+                        separatorBuilder: (context, index) =>
+                            Divider(height: 32),
+                        itemBuilder: (context, index) {
+                          var course = displayedCourses[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CourseDetailScreen(
+                                    item: jsonEncode(course),
+                                    selectedCategory: jsonEncode(selectedCategory),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 193, 223,
+                                    237), // Set a different background color
+                                borderRadius: BorderRadius.circular(
+                                    10), // Rounded corners
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(
+                                        0, 3), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              padding: EdgeInsets.all(
+                                  8), // Add some padding inside the container
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                          10), // Rounded corners for the image
+                                      child: course['cover'] != null
+                                          ? Image.network(
+                                              course['cover'],
+                                              height: 80,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : SizedBox.shrink(),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          course['title'] ?? '',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 4,
+                                          height: 4,
+                                        ),
+                                        Text(
+                                          "Fee:${course['fee']}",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // child: Row(
+                            //   crossAxisAlignment: CrossAxisAlignment.start,
+                            //   children: [
+                            //     Expanded(
+                            //       flex: 2,
+                            //       child: course['cover'] != null
+                            //           ? Image.network(
+                            //               course['cover'],
+                            //               height: 80,
+                            //               fit: BoxFit.cover,
+                            //             )
+                            //           : SizedBox.shrink(),
+                            //     ),
+                            //     SizedBox(width: 8),
+                            //     Expanded(
+                            //       flex: 3,
+                            //       child: Column(
+                            //         crossAxisAlignment: CrossAxisAlignment.start,
+                            //         children: [
+                            //           Text(
+                            //             course['title'] ?? '',
+                            //             style: TextStyle(
+                            //               fontSize: 16,
+                            //               fontWeight: FontWeight.bold,
+                            //             ),
+                            //           ),
+                            //           SizedBox(height: 4),
+                            //           Text(
+                            //             "${course['fee']}",
+                            //             style: TextStyle(
+                            //               fontSize: 16,
+                            //               fontWeight: FontWeight.bold,
+                            //             ),
+                            //           ),
+                            //         ],
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                          );
+                        },
                       ),
                     ],
                   ),
-                ),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: displayedCourses.length,
-                  separatorBuilder: (context, index) {
-                    return Divider(
-                      height: 32,
-                    );
-                  },
-                  itemBuilder: (context, index) {
-                    var course = displayedCourses[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CourseDetailScreen(
-                              item: jsonEncode(course),
-                            ),
-                          ),
-                        );
-                      },
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: course['cover'] != null
-                                ? Image.network(
-                                    course['cover'],
-                                    height: 80,
-                                    fit: BoxFit.cover,
-                                  )
-                                : SizedBox.shrink(),
-                          ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  course['title'] ?? '',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            "${course['fee']}",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
+                ],
+              ),
+            ),
     );
   }
 }
+
+
+
+
 
 // List courseList = [];
 
