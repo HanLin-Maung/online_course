@@ -1384,3 +1384,606 @@
                                     //         });
                                     //       },
                                     //     ),
+
+
+// this codes are from course_screen.dart
+
+
+
+// List courseList = [];
+
+// class CourseScreen extends StatefulWidget {
+//   const CourseScreen({super.key, required this.courses});
+
+//   final List courses;
+
+//   @override
+//   State<CourseScreen> createState() => _CourseScreenState();
+// }
+
+// class _CourseScreenState extends State<CourseScreen> {
+//   bool showAllCourses = false;
+
+//   // Toggle between showing all categories and showing only a subset
+//   void toggleShowAllCourses() {
+//     setState(() {
+//       showAllCourses = !showAllCourses;
+//     });
+//   }
+
+//   Future<void> fetchCourse() async {
+//     try {
+//       var response = await API().getCourseList();
+
+//       if (response.statusCode == 201) {
+//         var res = json.decode(response.body);
+//         if (res["success"] == true) {
+//           setState(() {
+//             courseList = res['courses'];
+//           });
+//         }
+//       } else {
+//         throw Exception('Failed to load courses: ${response.statusCode}');
+//       }
+//     } catch (err) {
+//       print('Error fetching categories: $err');
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+//     final isWideScreen = screenWidth > 600;
+
+//     final List<Widget> courseItems = showAllCourses
+//         ? widget.courses.map<Widget>((course) {
+//             return _buildCourseItem(course);
+//           }).toList()
+//         : widget.courses.take(4).map<Widget>((course) {
+//             return _buildCourseItem(course);
+//           }).toList();
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text(
+//           "All Courses",
+//           style: TextStyle(
+//             fontWeight: FontWeight.w700,
+//             fontSize: 18,
+//             color: Colors.black,
+//           ),
+//         ),
+//       ),
+//       body: SingleChildScrollView(
+//         child: Container(
+//           child: Column(
+//             children: [
+//               Padding(
+//                 padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+//                 child: Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                   children: [
+//                     Text(
+//                       "Explore Courses",
+//                       style: Theme.of(context).textTheme.bodyLarge,
+//                     ),
+//                     TextButton(
+//                       onPressed: toggleShowAllCourses,
+//                       child: Text(
+//                         showAllCourses ? "Show Less" : "See All",
+//                         style: Theme.of(context)
+//                             .textTheme
+//                             .bodyMedium
+//                             ?.copyWith(color: kPrimaryColor),
+//                       ),
+//                     )
+//                   ],
+//                 ),
+//               ),
+//               GridView.count(
+//                 shrinkWrap: true,
+//                 primary: false,
+//                 padding: const EdgeInsets.symmetric(
+//                   horizontal: 10,
+//                   vertical: 10,
+//                 ),
+//                 crossAxisCount: isWideScreen ? 4 : 2,
+//                 childAspectRatio: 0.66,
+//                 crossAxisSpacing: 15,
+//                 mainAxisSpacing: 15,
+//                 children: courseItems,
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildCourseItem(Map<String, dynamic> course) {
+//     // void deleteCategory(BuildContext scaffoldContext) async {
+//     //   try {
+//     //     var response = await API().deleteCategory(category['_id']);
+//     //     if (response.statusCode == 200) {
+//     //       setState(() {
+//     //         categoryList
+//     //             .removeWhere((element) => element['_id'] == category['_id']);
+//     //       });
+//     //       ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+//     //         SnackBar(content: Text('Category deleted successfully')),
+//     //       );
+//     //     } else {
+//     //       throw Exception('Failed to delete category: ${response.statusCode}');
+//     //     }
+//     //   } catch (err) {
+//     //     print('Error deleting category: $err');
+//     //     ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+//     //       SnackBar(content: Text('Failed to delete category')),
+//     //     );
+//     //   }
+//     // }
+
+//     return GestureDetector(
+//       onTap: () {
+//         // Navigator.push(
+//         //   context,
+//         //   MaterialPageRoute(
+//         //     builder: (context) => const DetailsScreen(ca),
+//         //   ),
+//         // );
+//       },
+//       child: Container(
+//         padding: const EdgeInsets.all(10),
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           borderRadius: BorderRadius.circular(20),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(.1),
+//               blurRadius: 4.0,
+//               spreadRadius: .05,
+//             ),
+//           ],
+//         ),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               // mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 // Text(truncatedTitle),
+//                 IconButton(
+//                     onPressed: () {
+//                       showDialog(
+//                           context: context,
+//                           builder: (BuildContext context) {
+//                             return AlertDialog(
+//                               title: Text("Delete Course"),
+//                               content: Text("Are you sure want to delete?"),
+//                               actions: <Widget>[
+//                                 Container(
+//                                   decoration: BoxDecoration(
+//                                     boxShadow: [
+//                                       BoxShadow(
+//                                         color: Colors.grey
+//                                             .withOpacity(0.5), // Shadow color
+//                                         spreadRadius: 2, // Spread radius
+//                                         blurRadius: 4, // Blur radius
+//                                         offset:
+//                                             const Offset(0, 2), // Shadow offset
+//                                       ),
+//                                     ],
+//                                     borderRadius: BorderRadius.circular(
+//                                         20), // Border radius
+//                                   ),
+//                                   child: ElevatedButton(
+//                                     style: ElevatedButton.styleFrom(
+//                                       backgroundColor: Colors
+//                                           .white, // Button background color
+//                                       elevation: 0, // No button elevation
+//                                     ),
+//                                     onPressed: () {
+//                                       Navigator.of(context)
+//                                           .pop(); // Close the dialog
+//                                     },
+//                                     child: const Text(
+//                                       "No",
+//                                       style: TextStyle(
+//                                           color: Colors.black), // Text color
+//                                     ),
+//                                   ),
+//                                 ),
+//                                 const SizedBox(
+//                                     width: 10), // Add spacing between buttons
+//                                 Container(
+//                                   decoration: BoxDecoration(
+//                                     boxShadow: [
+//                                       BoxShadow(
+//                                         color: Colors.grey
+//                                             .withOpacity(0.5), // Shadow color
+//                                         spreadRadius: 2, // Spread radius
+//                                         blurRadius: 4, // Blur radius
+//                                         offset:
+//                                             const Offset(0, 2), // Shadow offset
+//                                       ),
+//                                     ],
+//                                     borderRadius: BorderRadius.circular(
+//                                         20), // Border radius
+//                                   ),
+//                                   child: ElevatedButton(
+//                                     style: ElevatedButton.styleFrom(
+//                                       backgroundColor: const Color.fromRGBO(28, 21, 18,
+//                                           0.298), // Button background color
+//                                       elevation: 0, // No button elevation
+//                                     ),
+//                                     onPressed: () {
+//                                       // Navigator.of(context)
+//                                       //     .pop(); // Close the dialog
+//                                       // deleteCategory(
+//                                       //     context); // Call deleteCategory function with scaffold's context
+//                                     },
+//                                     child: const Text(
+//                                       "Yes",
+//                                       style: TextStyle(
+//                                           color: Colors.white), // Text color
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ],
+//                             );
+//                           });
+//                     },
+//                     icon: const Icon(Icons.more_vert))
+//               ],
+//             ),
+//             // Check if cover is not null before accessing it
+//             if (course["cover"] != null)
+//               CachedNetworkImage(
+//                 imageUrl: course["cover"]!, // URL from Api response
+//                 height: kCategoryCardImageSize, //  Set the fixed size of Image
+//                 width:
+//                     double.infinity, // Make it flexible in horizontal direction
+//                 fit: BoxFit.cover,
+//               ),
+
+//             const SizedBox(height: 6),
+
+//             Text(course["title"]),
+//             // Text(
+//             //   _truncateDescription(category["description"]),
+//             //   style: Theme.of(context).textTheme.bodySmall,
+//             // )
+//           ],  super vpn
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+                            // child: Row(
+                            //   crossAxisAlignment: CrossAxisAlignment.start,
+                            //   children: [
+                            //     Expanded(
+                            //       flex: 2,
+                            //       child: course['cover'] != null
+                            //           ? Image.network(
+                            //               course['cover'],
+                            //               height: 80,
+                            //               fit: BoxFit.cover,
+                            //             )
+                            //           : SizedBox.shrink(),
+                            //     ),
+                            //     SizedBox(width: 8),
+                            //     Expanded(
+                            //       flex: 3,
+                            //       child: Column(
+                            //         crossAxisAlignment: CrossAxisAlignment.start,
+                            //         children: [
+                            //           Text(
+                            //             course['title'] ?? '',
+                            //             style: TextStyle(
+                            //               fontSize: 16,
+                            //               fontWeight: FontWeight.bold,
+                            //             ),
+                            //           ),
+                            //           SizedBox(height: 4),
+                            //           Text(
+                            //             "${course['fee']}",
+                            //             style: TextStyle(
+                            //               fontSize: 16,
+                            //               fontWeight: FontWeight.bold,
+                            //             ),
+                            //           ),
+                            //         ],
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                            // Row(
+                    //   children: [
+                    //     // Flexible(
+                    //     //   child: UserInfo(
+                    //     //     onPressed: () {},
+                    //     //     expanded: false,
+                    //     //     title: course['teacher']['name'],
+                    //     //     avatarURL: course['teacher']['avatarURL'],
+                    //     //   ),
+                    //     // ),
+                    //     // const DotContainer(),
+                    //     Padding(
+                    //       padding: const EdgeInsets.symmetric(horizontal: 2),
+                    //       child: Text(course['level'], style: TextStyle(fontSize: 15, color: Colors.grey)),
+                    //     ),
+                    //     // const DotContainer(),
+                    //     Padding(
+                    //       padding: const EdgeInsets.symmetric(horizontal: 2),
+                    //       child: Text(
+                    //         "${course['lessons'].length} ${course['lessons'].length > 1 ? 'Lessons' : 'Lesson'}",
+                    //         style: TextStyle(fontSize: 15, color: Colors.grey),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+
+
+// these codes are from course_screen.dart
+
+// import 'dart:convert';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:online_course_app/Api/api.dart';
+// import 'package:online_course_app/constants/color.dart';
+// import 'package:online_course_app/screens/course_detail_screen.dart';
+
+// class CourseScreen extends StatefulWidget {
+//   final String selectedCategory;
+
+//   const CourseScreen({
+//     Key? key,
+//     required this.selectedCategory,
+//   }) : super(key: key);
+
+//   @override
+//   State<CourseScreen> createState() => _CourseScreenState();
+// }
+
+// class _CourseScreenState extends State<CourseScreen> {
+//   late List<dynamic> allCourses = [];
+//   List<dynamic> displayedCourses = [];
+//   bool showAllCourses = false;
+//   bool isLoading = true;
+//   Map<String, dynamic> selectedCategory = {};
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     getInitData();
+//   }
+
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     // Dispose any resources if needed
+//   }
+
+//   getInitData() {
+//     setState(() {
+//       if (widget.selectedCategory != '') {
+//         selectedCategory = jsonDecode(widget.selectedCategory);
+//         _fetchCourseList();
+//       }
+//     });
+//   }
+
+//   Future<void> _fetchCourseList() async {
+//     try {
+//       var response = await API().getOneCourse(selectedCategory['_id']);
+//       if (response.statusCode == 200 || response.statusCode == 201) {
+//         Map<String, dynamic> jsonResponse = json.decode(response.body);
+//         List<dynamic> courseList = jsonResponse['courses'];
+//         setState(() {
+//           allCourses = courseList;
+//           displayedCourses = courseList.take(5).toList(); // Show first 5 courses initially
+//           isLoading = false;
+//         });
+//       } else {
+//         print('Failed to fetch course list. Status code: ${response.statusCode}');
+//       }
+//     } catch (error) {
+//       print('Error: $error');
+//     }
+//   }
+
+//   void toggleCoursesVisibility() {
+//     setState(() {
+//       if (showAllCourses) {
+//         displayedCourses = allCourses.take(5).toList(); // Show first 5 courses
+//       } else {
+//         displayedCourses = allCourses; // Show all courses
+//       }
+//       showAllCourses = !showAllCourses; // Toggle visibility
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         foregroundColor: Colors.white,
+//         backgroundColor: Colors.black87,
+//         elevation: 0,
+//         centerTitle: true,
+//         title: Text(
+//           selectedCategory["title"],
+//           textAlign: TextAlign.center,
+//           style: Theme.of(context).appBarTheme.titleTextStyle,
+//           overflow: TextOverflow.visible,
+//           maxLines: null,
+//         ),
+//       ),
+//       body: isLoading
+//           ? Center(
+//               child: CircularProgressIndicator(),
+//             )
+//           : Padding(
+//               padding: EdgeInsets.all(5),
+//               child: ListView(
+//                 children: [
+//                   Container(
+//                     width: MediaQuery.of(context).size.width,
+//                     height: 200,
+//                     decoration: BoxDecoration(
+//                       borderRadius: BorderRadius.circular(20),
+//                       color: Colors.grey,
+//                       image: DecorationImage(
+//                         image: NetworkImage(selectedCategory['cover']),
+//                         fit: BoxFit.cover,
+//                       ),
+//                     ),
+//                   ),
+//                   const SizedBox(height: 15),
+//                   Column(
+//                     children: [
+//                       Padding(
+//                         padding: EdgeInsets.fromLTRB(24, 16, 24, 10),
+//                         child: Row(
+//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                           children: [
+//                   Text(
+//                     "Explore Courses",
+//                     style: Theme.of(context).textTheme.bodyLarge,
+//                   ),
+//                   TextButton(
+//                     onPressed: toggleCoursesVisibility,
+//                     child: Text(
+//                       showAllCourses ? "Show Less" : "See All",
+//                       style: Theme.of(context)
+//                           .textTheme
+//                           .bodyMedium
+//                           ?.copyWith(color: kPrimaryColor),
+//                     ),
+//                   )
+//                 ],
+//                         ),
+//                       ),
+//                       ListView.builder(
+//                         shrinkWrap: true,
+//                         physics: NeverScrollableScrollPhysics(),
+//                         padding: EdgeInsets.symmetric(horizontal: 24),
+//                         itemCount: displayedCourses.length,
+//                         itemBuilder: (context, index) {
+//                           var course = displayedCourses[index];
+//                           return CourseItemCard(
+//                             course: course,
+//                             selectedCategory: selectedCategory,
+//                             onPressed: () {
+//                               Navigator.push(
+//                                 context,
+//                                 MaterialPageRoute(
+//                                   builder: (context) => CourseDetailScreen(
+//                                     item: jsonEncode(course),
+//                                     selectedCategory: jsonEncode(selectedCategory),
+//                                   ),
+//                                 ),
+//                               );
+//                             },
+//                           );
+//                         },
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//     );
+//   }
+// }
+
+// class CourseItemCard extends StatelessWidget {
+//   final Map<String, dynamic> course;
+//   final Map<String, dynamic> selectedCategory;
+//   final VoidCallback onPressed;
+
+//   const CourseItemCard({
+//     Key? key,
+//     required this.course,
+//     required this.selectedCategory,
+//     required this.onPressed,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     const radius = 10.0;
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 20),
+//       child: InkWell(
+//         onTap: onPressed,
+//         borderRadius: BorderRadius.circular(radius),
+//         child: Ink(
+//           decoration: BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.circular(radius),
+//             boxShadow: [
+//               BoxShadow(
+//                 color: Colors.grey[300]!,
+//                 blurRadius: 3,
+//               ),
+//             ],
+//           ),
+//           child: Column(
+//             children: [
+//               SizedBox(
+//                 height: 200.0,
+//                 width: MediaQuery.of(context).size.width,
+//                 child: course['cover'] != null
+//                     ? ClipRRect(
+//                         borderRadius: const BorderRadius.vertical(
+//                           top: Radius.circular(radius),
+//                         ),
+//                         child: Image.network(
+//                           course['cover'],
+//                           fit: BoxFit.cover,
+//                         ),
+//                       )
+//                     : const SizedBox(),
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.all(17.0),
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Text(
+//                       course['title'] ?? '',
+//                       maxLines: 2,
+//                       overflow: TextOverflow.ellipsis,
+//                       style: TextStyle(
+//                         fontSize: 16,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                     const SizedBox(height: 15),
+
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.black.withOpacity(0.2),
+            //     spreadRadius: 5,
+            //     blurRadius: 7,
+            //     offset: const Offset(0, 3),
+            //   ),
+            // ],

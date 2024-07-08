@@ -6,8 +6,6 @@ import 'package:online_course_app/constants/size.dart';
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
 
-  
-
   @override
   State<BottomBar> createState() => _BottomBarState();
 }
@@ -19,10 +17,8 @@ class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // body: Center(
-      //   child: _widgetOptions.elementAt(_selectedIndex),
-      // ),
       bottomNavigationBar: BottomNavigationBar(
+        
         type: BottomNavigationBarType.fixed,
         selectedItemColor: kPrimaryColor,
         backgroundColor: Colors.white,
@@ -83,3 +79,8 @@ class _BottomBarState extends State<BottomBar> {
     );
   }
 } 
+
+// body: Center(
+      //   child: _widgetOptions.elementAt(_selectedIndex),
+      // ),
+      
