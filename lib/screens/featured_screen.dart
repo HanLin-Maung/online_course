@@ -289,7 +289,6 @@ import 'package:online_course_app/screens/favorite_screen.dart';
 import 'package:online_course_app/screens/profile_screen.dart';
 import 'package:online_course_app/screens/search_category_screen.dart';
 import 'package:online_course_app/widgets/main_drawer.dart';
-import 'package:online_course_app/widgets/search_testfield.dart';
 
 List categoryList = [];
 
@@ -301,13 +300,16 @@ class FeaturedScreen extends StatefulWidget {
 
 class _FeaturedScreenState extends State<FeaturedScreen> {
   int _selectedIndex = 0;
+  String selectedCategory = '{}'; // Default to an empty JSON object
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    FeaturedScreenContent(),
-    CourseScreen(selectedCategory: '',),
-    FavoriteScreen(),
-    ProfileScreen(),
-  ];
+  static List<Widget> _widgetOptions(String selectedCategory) {
+    return <Widget>[
+      FeaturedScreenContent(),
+      // CourseScreen(selectedCategory: selectedCategory),
+      FavoriteScreen(selectedCategory: selectedCategory),
+      ProfileScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -330,6 +332,10 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
         if (res["success"] == true) {
           setState(() {
             categoryList = res['categories'];
+            // Example: Set the first category as selected
+            if (categoryList.isNotEmpty) {
+              selectedCategory = jsonEncode(categoryList[0]);
+            }
           });
         }
       } else {
@@ -346,7 +352,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
       value: SystemUiOverlayStyle.light,
       child: Builder(
         builder: (context) => Scaffold(
-          body: _widgetOptions.elementAt(_selectedIndex),
+          body: _widgetOptions(selectedCategory).elementAt(_selectedIndex),
           drawer: const MainDrawer(),
           bottomNavigationBar: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
@@ -354,10 +360,10 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                 icon: Icon(Icons.home),
                 label: 'Home',
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.book),
-                label: 'Courses',
-              ),
+              // BottomNavigationBarItem(
+              //   icon: Icon(Icons.book),
+              //   label: 'Courses',
+              // ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.favorite),
                 label: 'Favorites',
@@ -365,11 +371,9 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 label: 'Profile',
-                
               ),
             ],
             currentIndex: _selectedIndex,
-            // unselectedLabelStyle: Theme.of(context).textTheme.labelMedium,
             unselectedItemColor: Color.fromARGB(255, 137, 132, 132),
             selectedItemColor: kPrimaryColor,
             onTap: _onItemTapped,
@@ -380,6 +384,56 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
   }
 }
 
+
+
+// class FeaturedScreenContent extends StatefulWidget {
+//   const FeaturedScreenContent({super.key});
+
+//   @override
+//   State<FeaturedScreenContent> createState() => _FeaturedScreenContentState();
+// }
+
+// class _FeaturedScreenContentState extends State<FeaturedScreenContent> {
+//   List categories = [];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     getAllCategories();
+//   }
+
+//   getAllCategories() async {
+//     try {
+//       var response = await API().getAllCategoriesApi();
+//       if (response.statusCode == 201) {
+//         var res = json.decode(response.body);
+//         if (res["success"] == true) {
+//           setState(() {
+//             categoryList = res['categories'];
+//           });
+//         }
+//       } else {
+//         throw Exception('Failed to load categories: ${response.statusCode}');
+//       }
+//     } catch (err) {
+//       print('Error fetching categories: $err');
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SingleChildScrollView(
+//       child: Column(
+//         children: [
+//           CustomAppBar(categories: categories,),
+//           categoryList.isNotEmpty
+//               ? Body(categories: categoryList)
+//               : Center(child: CircularProgressIndicator()),
+//         ],
+//       ),
+//     );
+//   }
+// }
 class FeaturedScreenContent extends StatefulWidget {
   const FeaturedScreenContent({super.key});
 
@@ -388,6 +442,8 @@ class FeaturedScreenContent extends StatefulWidget {
 }
 
 class _FeaturedScreenContentState extends State<FeaturedScreenContent> {
+  List categories = [];
+
   @override
   void initState() {
     super.initState();
@@ -401,7 +457,7 @@ class _FeaturedScreenContentState extends State<FeaturedScreenContent> {
         var res = json.decode(response.body);
         if (res["success"] == true) {
           setState(() {
-            categoryList = res['categories'];
+            categories = res['categories'];
           });
         }
       } else {
@@ -417,15 +473,17 @@ class _FeaturedScreenContentState extends State<FeaturedScreenContent> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const CustomAppBar(),
-          categoryList.isNotEmpty
-              ? Body(categories: categoryList)
+          CustomAppBar(categories: categories),
+          categories.isNotEmpty
+              ? Body(categories: categories)
               : Center(child: CircularProgressIndicator()),
         ],
       ),
     );
   }
 }
+
+
 
 class Body extends StatefulWidget {
   const Body({super.key, required this.categories});
@@ -565,8 +623,78 @@ class _BodyState extends State<Body> {
   }
 }
 
+// class CustomAppBar extends StatelessWidget {
+//   const CustomAppBar({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
+//       height: 130,
+//       width: double.infinity,
+//       decoration: const BoxDecoration(
+//         borderRadius: BorderRadius.only(
+//           bottomLeft: Radius.circular(25),
+//           bottomRight: Radius.circular(25),
+//         ),
+//         gradient: RadialGradient(
+//           colors: [
+//             Color.fromARGB(255, 52, 71, 81),
+//             Color.fromARGB(255, 30, 39, 44),
+//           ],
+//           radius: 0.9,
+//         ),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.grey,
+//             spreadRadius: 4,
+//             blurRadius: 5,
+//             offset: Offset(0, 3),
+//           ),
+//         ],
+//       ),
+//       child: Column(
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.start,
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               IconButton(
+//                 onPressed: () {
+//                   Scaffold.of(context).openDrawer();
+//                 },
+//                 icon: const Icon(Icons.menu),
+//                 color: Colors.white,
+//               ),
+//               Text(
+//                 'Hello,\nWelcome Back',
+//                 style: Theme.of(context).textTheme.titleLarge,
+//               ),
+//               const SizedBox(width: 120,),
+              
+//               IconButton(
+//                 onPressed: (){
+//                   showSearch(context: context, delegate: SearchCategory());
+//                 }, 
+//                 icon: const Icon(Icons.search_rounded),
+//                 color: Colors.white,
+//                 iconSize: 30,
+                
+//               ),
+                
+//             ],
+            
+//           ),
+          
+//         ],
+//       ),
+//     );
+//   }
+// }
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key});
+  final List categories;
+
+  const CustomAppBar({super.key, required this.categories});
 
   @override
   Widget build(BuildContext context) {
@@ -613,26 +741,23 @@ class CustomAppBar extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(width: 120,),
-              
               IconButton(
-                onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchCategoryScreen()));
-                }, 
+                onPressed: () {
+                  showSearch(context: context, delegate: SearchCategory(categories: categories));
+                },
                 icon: const Icon(Icons.search_rounded),
                 color: Colors.white,
                 iconSize: 30,
-                
               ),
-                
             ],
-            
           ),
-          
         ],
       ),
     );
   }
 }
+
+
 
 
 // const SizedBox(height: 20,),

@@ -333,7 +333,7 @@ class _CourseScreenState extends State<CourseScreen> {
             indicatorColor: Colors.yellow,
             tabs: [
               Tab(text: "All Courses"),
-              Tab(text: "Category"),
+              Tab(text: "About Category"),
             ],
           ),
         ),
@@ -480,29 +480,31 @@ class _CourseScreenState extends State<CourseScreen> {
     return Container(
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
-        color: Colors.grey,
+        color: Color.fromARGB(255, 218, 215, 215),
         
       ),
       child: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(10.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // const Padding(
+              //   padding: EdgeInsets.only(left: 80),),
               Text(
                 selectedCategory["title"],
                 style: Theme.of(context).textTheme.headlineMedium,
                 
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 20),
               Text(
                 "Description",
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Text(
                 selectedCategory["description"] ?? "No description available.",
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
@@ -514,7 +516,7 @@ class _CourseScreenState extends State<CourseScreen> {
 
 
 
-// course and see all contain in Tab 2
+// 'course' and 'see all' contain in Tab 2
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
